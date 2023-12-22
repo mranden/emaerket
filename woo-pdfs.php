@@ -84,27 +84,34 @@ class Woo_PDFS {
 
     public function attach_pdfs_to_email($attachments, $email_id, $order) {
         $pdf_ids = get_option('woo_pdfs');
-
-        if(is_array($pdf_ids) && !empty($pdf_ids)) {
-            foreach($pdf_ids as $pdf_id) {
+    
+        // Handle both single ID and comma-separated list of IDs
+        if (!is_array($pdf_ids)) {
+            $pdf_ids = explode(',', $pdf_ids);
+        }
+    
+        foreach ($pdf_ids as $pdf_id) {
+            $pdf_id = trim($pdf_id); // Trim spaces that might be around the ID
+            if (is_numeric($pdf_id)) {
                 $pdf_path = $this->get_media_file_path($pdf_id);
-                if(file_exists($pdf_path)) {
+                if (file_exists($pdf_path)) {
                     $attachments[] = $pdf_path;
                 }
             }
         }
-
+    
         // Assuming $terms_pdf and $other_pdf are defined elsewhere in your class
-        if(isset($terms_pdf) && file_exists($terms_pdf)) {
+        if (isset($terms_pdf) && file_exists($terms_pdf)) {
             $attachments[] = $terms_pdf;
         }
-
-        if(isset($other_pdf) && file_exists($other_pdf)) {
+    
+        if (isset($other_pdf) && file_exists($other_pdf)) {
             $attachments[] = $other_pdf;
         }
-
+    
         return $attachments;
     }
+    
 
 
     private function get_media_file_path($media_id) {
